@@ -11,6 +11,7 @@ from dataset import DatasetFromHdf5
 
 # Training settings
 parser = argparse.ArgumentParser(description="PyTorch FrogSRN")
+parser.add_argument("--depth", type=int, default=4, help="depth of the network")
 parser.add_argument("--batchSize", type=int, default=64, help="training batch size")
 parser.add_argument("--nEpochs", type=int, default=100, help="number of epochs to train for")
 parser.add_argument("--lr", type=float, default=1e-4, help="Learning Rate. Default=1e-4")
@@ -45,8 +46,8 @@ def main():
     train_set = DatasetFromHdf5("data/lap_pry_x4_small.h5")
     training_data_loader = DataLoader(dataset=train_set, num_workers=opt.threads, batch_size=opt.batchSize, shuffle=True)
 
-    print("===> Building model")
-    model = Net()
+    print("===> Building model (depth: %d)"%opt.depth)
+    model = Net(opt.depth)
     criterion = L1_Charbonnier_loss()
 
     print("===> Setting GPU")
@@ -127,7 +128,7 @@ def train(training_data_loader, optimizer, model, criterion, epoch):
 
 def save_checkpoint(model, epoch):
     model_folder = "checkpoint/"
-    model_out_path = model_folder + "frogsrn_model_epoch_{}.pth".format(epoch)
+    model_out_path = model_folder + "frogsrn_model_{}_epoch_{}.pth".format(opt.depth, epoch)
     state = {"epoch": epoch ,"model": model}
     if not os.path.exists(model_folder):
         os.makedirs(model_folder)

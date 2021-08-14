@@ -38,25 +38,21 @@ class ResBlock(nn.Module):
         return res
 
 class _Conv_Block(nn.Module):    
-    def __init__(self):
+    def __init__(self, depth):
         super(_Conv_Block, self).__init__()
-        
-        self.cov_block = nn.Sequential(
-            ResBlock(nFeat = 64, kernel_size=3, bias=False),
-            ResBlock(nFeat = 64, kernel_size=3, bias=False),
-            ResBlock(nFeat = 64, kernel_size=3, bias=False),
-            ResBlock(nFeat = 64, kernel_size=3, bias=False),
-            ResBlock(nFeat = 64, kernel_size=3, bias=False),
-            nn.ConvTranspose2d(in_channels=64, out_channels=64, kernel_size=4, stride=2, padding=1, bias=False),
-            nn.LeakyReLU(0.2, inplace=True),
-        )
+        sequential = []
+        for i in range(0,depth):
+            sequential.append(ResBlock(nFeat = 64, kernel_size=3, bias=False))
+        sequential.append(nn.ConvTranspose2d(in_channels=64, out_channels=64, kernel_size=4, stride=2, padding=1, bias=False))
+        sequential.append(nn.LeakyReLU(0.2, inplace=True))
+        self.cov_block = nn.Sequential(*sequential)
         
     def forward(self, x):  
         output = self.cov_block(x)
         return output 
 
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(self, depth=4):
         super(Net, self).__init__()
         
         self.conv_input = nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, stride=1, padding=1, bias=False)
@@ -64,11 +60,11 @@ class Net(nn.Module):
         
         self.convt_I1 = nn.ConvTranspose2d(in_channels=1, out_channels=1, kernel_size=4, stride=2, padding=1, bias=False)
         self.convt_R1 = nn.Conv2d(in_channels=64, out_channels=1, kernel_size=3, stride=1, padding=1, bias=False)
-        self.convt_F1 = self.make_layer(_Conv_Block)
+        self.convt_F1 = self.make_layer(_Conv_Block, depth)
   
         self.convt_I2 = nn.ConvTranspose2d(in_channels=1, out_channels=1, kernel_size=4, stride=2, padding=1, bias=False)
         self.convt_R2 = nn.Conv2d(in_channels=64, out_channels=1, kernel_size=3, stride=1, padding=1, bias=False)
-        self.convt_F2 = self.make_layer(_Conv_Block)        
+        self.convt_F2 = self.make_layer(_Conv_Block, depth)        
         
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -83,9 +79,9 @@ class Net(nn.Module):
                 if m.bias is not None:
                     m.bias.data.zero_()
                     
-    def make_layer(self, block):
+    def make_layer(self, block, depth):
         layers = []
-        layers.append(block())
+        layers.append(block(depth))
         return nn.Sequential(*layers)
 
     def forward(self, x):    
