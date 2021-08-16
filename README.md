@@ -2,6 +2,12 @@
 Implementation of CVPR2017 Paper: "Deep Laplacian Pyramid Networks for Fast and Accurate Super-Resolution"(http://vllab.ucmerced.edu/wlai24/LapSRN/) in PyTorch
 
 ## Usage
+
+### Prepare
+```
+docker run --rm -it -v $(pwd)/pytorch-LapSRN:/workspace --name lapsrn --gpus all pytorch/pytorch:1.2-cuda10.0-cudnn7-runtime bash
+pip install h5py scipy matplotlib
+```
 ### Training
 ```
 usage: main.py [-h] [--batchSize BATCHSIZE] [--nEpochs NEPOCHS] [--lr LR]

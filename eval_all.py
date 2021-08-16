@@ -88,6 +88,6 @@ def evaluate(model_path):
     }
 
 for i in range(1,1000):
-    model_path = opt.model
+    model_path = opt.models
     if os.path.exists(model_path):
         print(evaluate(model_path))
