@@ -36,6 +36,13 @@ An example of training usage is shown as follows:
 ```
 python main_lapsrn.py --cuda
 ```
+### Generate and run jobs
+```
+./job_gen.sh ./job_templates/job_lapsrn.sh 64
+./job_run.sh
+./job_gen.sh ./job_templates/job_frogsrn.sh 64
+./job_run.sh
+```
 
 ### Evaluation
 ```
