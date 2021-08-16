@@ -1,13 +1,16 @@
 #!/bin/bash -x
-HERE=$(dirname ${BASH_SOURCE[0]})
-
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+JOBSDIR="$HERE/jobs"
+rm -rf "$JOBSDIR"
+mkdir -p "$JOBSDIR"
 TEMPLATE=$1
 N=$2
 while true; do
     for GPU in $(lsload | grep gpu | grep ok | awk '{print $1}'); do
+        FILE="$JOBSDIR/$N.$(basename $TEMPLATE)"
         eval "cat <<EOF
 $(<$TEMPLATE)
-EOF" >$HERE/jobs/$N.$(basename $TEMPLATE)
+EOF" >$FILE
         ((N--))
         if ((N <= 0)); then
             break 2
