@@ -4,13 +4,14 @@ from torch.autograd import Variable
 import numpy as np
 import time, math, glob
 import scipy.io as sio
-import matplotlib.pyplot as plt
+import json
 
 parser = argparse.ArgumentParser(description="PyTorch LapSRN Eval")
 parser.add_argument("--cuda", action="store_true", help="use cuda?")
 parser.add_argument("--model", default="model/model_epoch_100.pth", type=str, help="model path")
 parser.add_argument("--dataset", default="Set5", type=str, help="dataset name, Default: Set5")
 parser.add_argument("--scale", default=4, type=int, help="scale factor, Default: 4")
+parser.add_argument("--result", default="result/model_epoch_100.log", type=str, help="result path")
 
 def PSNR(pred, gt, shave_border=0):
     height, width = pred.shape[:2]
@@ -76,8 +77,16 @@ for image_name in image_list:
     psnr_predicted = PSNR(im_gt_y, im_h_y,shave_border=opt.scale)
     avg_psnr_predicted += psnr_predicted
 
-print("Scale=", opt.scale)
-print("Dataset=", opt.dataset)
-print("PSNR_predicted=", avg_psnr_predicted/len(image_list))
-print("PSNR_bicubic=", avg_psnr_bicubic/len(image_list))
-print("It takes average {}s for processing".format(avg_elapsed_time/len(image_list)))
+result = {}
+def record(k,v):
+    print(k, "=", v)
+    result[k] = v
+
+record("Scale", opt.scale)
+record("Dataset", opt.dataset)
+record("PSNR_predicted", avg_psnr_predicted/len(image_list))
+record("PSNR_bicubic", avg_psnr_bicubic/len(image_list))
+record("Time_per_picture", avg_elapsed_time/len(image_list))
+
+with open(opt.result, "w") as f:
+    json.dump(result, f)
