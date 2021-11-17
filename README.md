@@ -44,11 +44,11 @@ python main_lapsrn.py --cuda
 ```
 ### Generate and run jobs
 ```
-./job_gen.sh ./job_templates/job_lapsrn.sh 64
+./job_gen.sh ./job_templates/train_lapsrn.sh 64
 ./job_run.sh
 ls checkpoint/lapsrn_model_*_epoch_100.pth
 cp checkpoint/lapsrn_model_*_epoch_100.pth model/
-./job_gen.sh ./job_templates/job_frogsrn.sh 64
+./job_gen.sh ./job_templates/train_frogsrn.sh 64
 ./job_run.sh
 ls checkpoint/frogsrn_model_*_epoch_100.pth
 cp checkpoint/frogsrn_model_*_epoch_100.pth model/
