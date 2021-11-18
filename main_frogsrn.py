@@ -124,7 +124,7 @@ def train(training_data_loader, optimizer, model, criterion, epoch):
         optimizer.step()
 
         if iteration%100 == 0:
-            print("===> Epoch[{}]({}/{}): Loss: {:.10f}".format(epoch, iteration, len(training_data_loader), loss.data[0]))
+            print("===> Epoch[{}]({}/{}): Loss: {:.10f}".format(epoch, iteration, len(training_data_loader), loss.item()))
 
 def save_checkpoint(model, epoch):
     model_folder = "checkpoint/"
