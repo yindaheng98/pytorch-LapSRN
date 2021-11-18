@@ -12,8 +12,8 @@ from dataset import DatasetFromFrames
 # Training settings
 parser = argparse.ArgumentParser(description="PyTorch LapSRN")
 parser.add_argument("--depth", type=int, default=4, help="depth of the network")
-parser.add_argument("--batchSize", type=int, default=16, help="training batch size")
-parser.add_argument("--nEpochs", type=int, default=100, help="number of epochs to train for")
+parser.add_argument("--batchSize", type=int, default=4, help="training batch size")
+parser.add_argument("--nEpochs", type=int, default=400, help="number of epochs to train for")
 parser.add_argument("--lr", type=float, default=1e-4, help="Learning Rate. Default=1e-4")
 parser.add_argument("--step", type=int, default=100, help="Sets the learning rate to the initial LR decayed by momentum every n epochs, Default: n=10")
 parser.add_argument("--cuda", action="store_true", help="Use cuda?")
