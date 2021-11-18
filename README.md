@@ -52,18 +52,18 @@ ffmpeg -i 4K.webm -g 30 -ss 00:00:00 -t 00:00:30 -s 960x540 "frames/540p/frame%3
 ```
 ### Generate and run jobs
 ```
-./job_gen.sh ./job_templates/train_lapsrn.sh 64
+./job_gen.sh ./job_templates/train_lapsrn.sh 16
 ./job_run.sh
 ls checkpoint/lapsrn_model_*_epoch_100.pth
 cp checkpoint/lapsrn_model_*_epoch_100.pth model/
-./job_gen.sh ./job_templates/eval_lapsrn.sh 64
+./job_gen.sh ./job_templates/eval_lapsrn.sh 16
 ./job_run.sh
 
-./job_gen.sh ./job_templates/train_frogsrn.sh 64
+./job_gen.sh ./job_templates/train_frogsrn.sh 16
 ./job_run.sh
 ls checkpoint/frogsrn_model_*_epoch_100.pth
 cp checkpoint/frogsrn_model_*_epoch_100.pth model/
-./job_gen.sh ./job_templates/eval_frogsrn.sh 64
+./job_gen.sh ./job_templates/eval_frogsrn.sh 16
 ./job_run.sh
 ```
 
