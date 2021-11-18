@@ -7,7 +7,7 @@ import torch.optim as optim
 from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from frogsrn import Net, L1_Charbonnier_loss
-from dataset import DatasetFromHdf5
+from dataset import DatasetFromFrames
 
 # Training settings
 parser = argparse.ArgumentParser(description="PyTorch FrogSRN")
@@ -43,7 +43,7 @@ def main():
     cudnn.benchmark = True
 
     print("===> Loading datasets")
-    train_set = DatasetFromHdf5("data/lap_pry_x4_small.h5")
+    train_set = DatasetFromFrames("frames")
     training_data_loader = DataLoader(dataset=train_set, num_workers=opt.threads, batch_size=opt.batchSize, shuffle=True)
 
     print("===> Building model (depth: %d)"%opt.depth)
