@@ -52,6 +52,9 @@ ffmpeg -i 4K.webm -g 30 -ss 00:00:00 -t 00:00:30 -s 960x540 "frames/540p/frame%3
 ```
 ### Generate and run jobs
 ```
+chmod +x ./job_gen.sh
+chmod +x ./job_run.sh
+
 ./job_gen.sh ./job_templates/train_lapsrn.sh 16
 ./job_run.sh
 ls checkpoint/lapsrn_model_*_epoch_100.pth
