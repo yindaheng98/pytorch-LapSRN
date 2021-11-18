@@ -42,6 +42,12 @@ An example of training usage is shown as follows:
 ```
 python main_lapsrn.py --cuda
 ```
+### Generate dataset
+```
+ffmpeg -i 4K.webm -g 30 -ss 00:00:00 -t 00:00:30 "frames/4K/frame%3d.png"
+ffmpeg -i 4K.webm -g 30 -ss 00:00:00 -t 00:00:30 -s 1920x1080 "frames/1080p/frame%3d.png"
+ffmpeg -i 4K.webm -g 30 -ss 00:00:00 -t 00:00:30 -s 960x540 "frames/540p/frame%3d.png"
+```
 ### Generate and run jobs
 ```
 ./job_gen.sh ./job_templates/train_lapsrn.sh 64
