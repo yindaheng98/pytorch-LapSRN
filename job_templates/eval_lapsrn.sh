@@ -12,6 +12,6 @@ conda activate /seu_share/home/dongfang/df_yindh/frogsrn
 cd $HERE #进入作业工作目录
 mkdir -p log
 mkdir -p result
-python eval.py --cuda \
+python eval.py --cuda --depth $N \
 --model 'model/lapsrn_model_'$N'_epoch_100.pth' \
---result 'result/lapsrn_model_'$N'_epoch_100.json'
+--result 'result/lapsrn_model_'$N'_epoch_100'
