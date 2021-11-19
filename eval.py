@@ -10,6 +10,7 @@ import random
 import numpy as np
 from PIL import Image
 from PIL.Image import BICUBIC
+from torchvision import transforms
 from torch.utils.data import DataLoader
 from dataset import DatasetFromFrames
 from lapsrn import Net
@@ -21,11 +22,11 @@ parser.add_argument("--model", default="model/model_epoch_100.pth", type=str, he
 parser.add_argument("--cuda", action="store_true", help="use cuda?")
 parser.add_argument("--dataset", default="frames", type=str, help="dataset name, Default: frames")
 parser.add_argument("--scale", default=4, type=int, help="scale factor, Default: 4")
-parser.add_argument("--result", default="result/model_epoch_100.json", type=str, help="result path")
+parser.add_argument("--result", default="result", type=str, help="result path")
 parser.add_argument("--sample", default=10, type=int, help="How many pictures for eval?")
 
 def PSNR(pred, gt, shave_border=0):
-    imdff = pred - gt
+    imdff = np.array(pred) - np.array(gt)
     rmse = math.sqrt(np.mean(imdff ** 2))
     if rmse == 0:
         return 100
@@ -51,8 +52,10 @@ avg_elapsed_time = 0.0
 train_set = DatasetFromFrames("frames", opt.sample)
 training_data_loader = DataLoader(dataset=train_set, shuffle=True)
 
-for iteration, batch in enumerate(training_data_loader, 1):
-    print("Processing epoch %d" % iteration)
+for i, batch in enumerate(training_data_loader, 1):
+    os.makedirs(os.path.join(opt.result, str(i)), exist_ok=True)
+
+    print("Processing epoch %d" % i)
     
     im_l_y, im_gt_2x_y, im_gt_4x_y = Variable(batch[0]), Variable(batch[1], requires_grad=False), Variable(batch[2], requires_grad=False)
 
@@ -66,26 +69,36 @@ for iteration, batch in enumerate(training_data_loader, 1):
     HR_2x, HR_4x = model(im_l_y)
     elapsed_time = time.time() - start_time
     avg_elapsed_time += elapsed_time
-
     HR_4x = HR_4x.cpu()
     HR_2x = HR_2x.cpu()
-
-    im_h_4x_y = HR_4x.data[0].numpy().astype(np.float32)
-    im_h_2x_y = HR_2x.data[0].numpy().astype(np.float32)
-    im_gt_2x_y = im_gt_2x_y.data[0].numpy().astype(np.float32)
-    im_gt_4x_y = im_gt_4x_y.data[0].numpy().astype(np.float32)
-
-    im_h_4x_y = im_h_4x_y*255.
-    im_h_2x_y = im_h_2x_y*255.
-    im_h_4x_y[im_h_4x_y<0] = 0
-    im_h_2x_y[im_h_2x_y<0] = 0
-    im_h_4x_y[im_h_4x_y>255.] = 255.
-    im_h_2x_y[im_h_2x_y>255.] = 255.
+    
+    im_h_4x_y = transforms.ToPILImage()(torch.clamp(HR_4x.data[0], 0, 1))
+    im_h_4x_y.save(os.path.join(opt.result, str(i), "im_h_4x_y.png"))
+    im_h_2x_y = transforms.ToPILImage()(torch.clamp(HR_2x.data[0], 0, 1))
+    im_h_2x_y.save(os.path.join(opt.result, str(i), "im_h_2x_y.png"))
+    im_gt_2x_y = transforms.ToPILImage()(im_gt_2x_y.data[0])
+    im_gt_2x_y.save(os.path.join(opt.result, str(i), "im_gt_2x_y.png"))
+    im_gt_4x_y = transforms.ToPILImage()(im_gt_4x_y.data[0])
+    im_gt_4x_y.save(os.path.join(opt.result, str(i), "im_gt_4x_y.png"))
 
     psnr_4x_predicted = PSNR(im_gt_4x_y, im_h_4x_y,shave_border=opt.scale)
     avg_psnr_4x_predicted += psnr_4x_predicted
+    print("PSNR_2x_predicted", psnr_4x_predicted)
     psnr_2x_predicted = PSNR(im_gt_2x_y, im_h_2x_y,shave_border=opt.scale)
     avg_psnr_2x_predicted += psnr_2x_predicted
+    print("PSNR_4x_predicted", psnr_2x_predicted)
+
+    im_l_y = transforms.ToPILImage()(im_l_y.data[0])
+    im_b_4x_y = im_l_y.resize(im_gt_4x_y.size, resample=BICUBIC)
+    im_b_4x_y.save(os.path.join(opt.result, str(i), "im_b_4x_y.png"))
+    im_b_2x_y = im_l_y.resize(im_gt_2x_y.size, resample=BICUBIC)
+    im_b_2x_y.save(os.path.join(opt.result, str(i), "im_b_2x_y.png"))
+    psnr_4x_bicubic = PSNR(im_gt_4x_y, im_b_4x_y,shave_border=opt.scale)
+    avg_psnr_4x_bicubic += psnr_4x_bicubic
+    print("PSNR_4x_bicubic", psnr_4x_bicubic)
+    psnr_2x_bicubic = PSNR(im_gt_2x_y, im_b_2x_y,shave_border=opt.scale)
+    avg_psnr_2x_bicubic += psnr_2x_bicubic
+    print("PSNR_2x_bicubic", psnr_2x_bicubic)
 
 
 result = {}
@@ -101,5 +114,5 @@ record("PSNR_2x_predicted", avg_psnr_2x_predicted/opt.sample)
 record("PSNR_2x_bicubic", avg_psnr_2x_bicubic/opt.sample)
 record("Time_per_picture", avg_elapsed_time/opt.sample)
 
-with open(opt.result, "w") as f:
+with open(os.path.join(opt.result, 'result.json'), "w") as f:
     json.dump(result, f)
