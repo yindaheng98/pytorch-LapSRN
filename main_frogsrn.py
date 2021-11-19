@@ -12,8 +12,10 @@ from dataset import DatasetFromFrames
 # Training settings
 parser = argparse.ArgumentParser(description="PyTorch FrogSRN")
 parser.add_argument("--depth", type=int, default=4, help="depth of the network")
+parser.add_argument("--nFeat", type=int, default=16, help="depth of the hide channels")
 parser.add_argument("--batchSize", type=int, default=4, help="training batch size")
-parser.add_argument("--nEpochs", type=int, default=400, help="number of epochs to train for")
+parser.add_argument("--epochSize", type=int, default=16, help="training epoch size")
+parser.add_argument("--nEpochs", type=int, default=100, help="number of epochs to train for")
 parser.add_argument("--lr", type=float, default=1e-4, help="Learning Rate. Default=1e-4")
 parser.add_argument("--step", type=int, default=100, help="Sets the learning rate to the initial LR decayed by momentum every n epochs, Default: n=10")
 parser.add_argument("--cuda", action="store_true", help="Use cuda?")
@@ -43,11 +45,11 @@ def main():
     cudnn.benchmark = True
 
     print("===> Loading datasets")
-    train_set = DatasetFromFrames("frames")
+    train_set = DatasetFromFrames("frames", opt.epochSize)
     training_data_loader = DataLoader(dataset=train_set, num_workers=opt.threads, batch_size=opt.batchSize, shuffle=True)
 
     print("===> Building model (depth: %d)"%opt.depth)
-    model = Net(opt.depth)
+    model = Net(opt.depth, opt.nFeat)
     criterion = L1_Charbonnier_loss()
 
     print("===> Setting GPU")
