@@ -54,20 +54,29 @@ ffmpeg -i 4K.webm -g 30 -ss 00:00:00 -t 00:00:30 -s 960x540 "frames/540p/frame%3
 ```
 chmod +x ./job_gen.sh
 chmod +x ./job_run.sh
+rm -rf log
 
-./job_gen.sh ./job_templates/train_lapsrn.sh 16
+./job_gen.sh ./job_templates/train_lapsrn.sh 8
 ./job_run.sh
+
+bpeek -f $(bjobs | grep RUN | awk '{print $1}' | tail -n 1)
+
 ls checkpoint/lapsrn_model_*_epoch_100.pth
 cp checkpoint/lapsrn_model_*_epoch_100.pth model/
-./job_gen.sh ./job_templates/eval_lapsrn.sh 16
+./job_gen.sh ./job_templates/eval_lapsrn.sh 8
 ./job_run.sh
 
-./job_gen.sh ./job_templates/train_frogsrn.sh 16
+./job_gen.sh ./job_templates/train_frogsrn.sh 8
 ./job_run.sh
+
+bpeek -f $(bjobs | grep RUN | awk '{print $1}' | tail -n 1)
+
 ls checkpoint/frogsrn_model_*_epoch_100.pth
 cp checkpoint/frogsrn_model_*_epoch_100.pth model/
-./job_gen.sh ./job_templates/eval_frogsrn.sh 16
+./job_gen.sh ./job_templates/eval_frogsrn.sh 8
 ./job_run.sh
+
+bkill -u df_yindh 0
 ```
 
 ### Evaluation
