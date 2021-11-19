@@ -38,10 +38,12 @@ if opt.cuda and not torch.cuda.is_available():
     raise Exception("No GPU found, please run without --cuda")
 
 model = Net(opt.depth, opt.nFeat)
-checkpoint = torch.load(opt.model)
-model.load_state_dict(checkpoint["model"].state_dict())
 if opt.cuda:
     model.cuda()
+    checkpoint = torch.load(opt.model)
+else:
+    checkpoint = torch.load(opt.model, map_location=torch.device('cpu'))
+model.load_state_dict(checkpoint["model"].state_dict())
 
 avg_psnr_2x_predicted = 0.0
 avg_psnr_2x_bicubic = 0.0
