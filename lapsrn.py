@@ -76,7 +76,7 @@ class Net(nn.Module):
         convt_R2 = self.convt_R2(convt_F2)
         HR_4x = convt_I2 + convt_R2
        
-        return HR_2x, HR_4x, convt_R1, convt_R2
+        return HR_2x, HR_4x#, convt_R1, convt_R2
         
 class L1_Charbonnier_loss(nn.Module):
     """L1 Charbonnierloss."""
