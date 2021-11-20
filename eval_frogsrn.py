@@ -78,9 +78,9 @@ for i, batch in enumerate(training_data_loader, 1):
     im_h_4x_y.save(os.path.join(opt.result, str(i), "im_h_4x_y.png"))
     im_h_2x_y = transforms.ToPILImage()(torch.clamp(HR_2x.data[0], 0, 1))
     im_h_2x_y.save(os.path.join(opt.result, str(i), "im_h_2x_y.png"))
-    im_gt_2x_y = transforms.ToPILImage()(im_gt_2x_y.data[0])
+    im_gt_2x_y = transforms.ToPILImage()(im_gt_2x_y.cpu().data[0])
     im_gt_2x_y.save(os.path.join(opt.result, str(i), "im_gt_2x_y.png"))
-    im_gt_4x_y = transforms.ToPILImage()(im_gt_4x_y.data[0])
+    im_gt_4x_y = transforms.ToPILImage()(im_gt_4x_y.cpu().data[0])
     im_gt_4x_y.save(os.path.join(opt.result, str(i), "im_gt_4x_y.png"))
 
     psnr_4x_predicted = PSNR(im_gt_4x_y, im_h_4x_y,shave_border=opt.scale)
@@ -90,7 +90,7 @@ for i, batch in enumerate(training_data_loader, 1):
     avg_psnr_2x_predicted += psnr_2x_predicted
     print("PSNR_4x_predicted", psnr_2x_predicted)
 
-    im_l_y = transforms.ToPILImage()(im_l_y.data[0])
+    im_l_y = transforms.ToPILImage()(im_l_y.cpu().data[0])
     im_b_4x_y = im_l_y.resize(im_gt_4x_y.size, resample=BICUBIC)
     im_b_4x_y.save(os.path.join(opt.result, str(i), "im_b_4x_y.png"))
     im_b_2x_y = im_l_y.resize(im_gt_2x_y.size, resample=BICUBIC)
