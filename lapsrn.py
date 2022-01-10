@@ -23,7 +23,7 @@ class _Conv_Block(nn.Module):
             sequential.append(nn.Conv2d(in_channels=nFeat, out_channels=nFeat, kernel_size=3, stride=1, padding=1, bias=False))
             sequential.append(nn.LeakyReLU(0.2, inplace=True))
         sequential.append(nn.ConvTranspose2d(in_channels=nFeat, out_channels=nFeat, kernel_size=4, stride=2, padding=1, bias=False))
-        sequential.append(nn.LeakyReLU(0.2, inplace=True))
+        sequential.append(nn.ReLU(inplace=True))
         self.cov_block = nn.Sequential(*sequential)
         
     def forward(self, x):  
@@ -76,7 +76,7 @@ class Net(nn.Module):
         convt_R2 = self.convt_R2(convt_F2)
         HR_4x = convt_I2 + convt_R2
        
-        return HR_2x, HR_4x#, convt_R1, convt_R2
+        return HR_2x, HR_4x, out, convt_F1, convt_F2
         
 class L1_Charbonnier_loss(nn.Module):
     """L1 Charbonnierloss."""

@@ -68,7 +68,7 @@ for i, batch in enumerate(training_data_loader, 1):
         model = model.cpu()
 
     start_time = time.time()
-    HR_2x, HR_4x = model(im_l_y)
+    HR_2x, HR_4x, _, _, _ = model(im_l_y)
     elapsed_time = time.time() - start_time
     avg_elapsed_time += elapsed_time
     HR_4x = HR_4x.cpu()

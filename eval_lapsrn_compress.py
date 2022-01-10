@@ -111,12 +111,17 @@ for i, batch in enumerate(training_data_loader, 1):
     else:
         model = model.cpu()
 
-    HR_2x, HR_4x, convt_R1, convt_R2 = model(im_l_y)
+    HR_2x, HR_4x, out, convt_R1, convt_R2 = model(im_l_y)
+    out = out.cpu().detach().numpy()
+    print(out.shape)
     convt_R1 = convt_R1.cpu().detach().numpy()
+    print(convt_R1.shape)
     convt_R2 = convt_R2.cpu().detach().numpy()
+    print(convt_R2.shape)
 
-    compress_test(convt_R1, "compress_2x_time")
-    compress_test(convt_R2, "compress_4x_time")
+    compress_test(out, "compress_1x")
+    compress_test(convt_R1, "compress_2x")
+    compress_test(convt_R2, "compress_4x")
 
 
 
